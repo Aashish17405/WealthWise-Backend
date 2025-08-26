@@ -29,7 +29,12 @@ const corsOptions = {
 
 // app.use(cors(corsOptions));
 
-app.use(cors());
+app.use(cors({
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"], // Allow both common dev ports
+    credentials: true, // Needed if you're using cookies
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  }));
 // const validateOrigin = (req, res, next) => {
 //     const allowedOrigins = ['https://wealthwisee.vercel.app','https://wealthwisee.live','https://www.wealthwisee.live'];
 //     if (!allowedOrigins.includes(req.headers.origin)) {
@@ -77,6 +82,6 @@ app.use("/api/user", userRouter);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-app.listen(5001, () => {
-  console.log("Backend server listening at port 5001");
+app.listen(5000, () => {
+  console.log("Backend server listening at port 5000");
 });

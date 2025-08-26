@@ -33,26 +33,6 @@ userRouter.get("/findemail", async (req, res) => {
   }
 });
 
-userRouter.post("/updatecount", async (req, res) => {
-  const { email } = req.body;
-  try {
-    const updatedUser = await Signup.findOneAndUpdate(
-      { email: email },
-      { $set: { count: 1 } },
-      { new: true, upsert: false }
-    );
-    if (!updatedUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    return res
-      .status(200)
-      .json({ message: "Count updated successfully", user: updatedUser });
-  } catch (e) {
-    console.error(e);
-    return res.status(400).json({ error: e.message });
-  }
-});
-
 userRouter.get("/getbalance", async (req, res) => {
   try {
     const { userId } = req.query;

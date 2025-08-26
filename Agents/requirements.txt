@@ -1,0 +1,9 @@
+Flask
+requests
+beautifulsoup4
+tabulate
+pydantic
+yfinance
+serpapi
+crewai
+gunicorn

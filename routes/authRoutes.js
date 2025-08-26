@@ -15,7 +15,9 @@ admin.initializeApp({
 
 authRouter.post("/signin", async (req, res) => {
   try {
+    console.log("Login request received");
     const encrypted1 = req.body.encrypted;
+    console.log("Encrypted data received:", encrypted1);
 
     if (!process.env.REACT_APP_SECRET || !process.env.TOKEN) {
       return res.status(500).json({ error: "Server configuration error" });
@@ -39,11 +41,6 @@ authRouter.post("/signin", async (req, res) => {
 
     const auth1 = decrypted.auth;
     const email = decrypted.email1;
-    const recaptchatoken = decrypted.token1;
-
-    if (!recaptchatoken) {
-      return res.status(400).json({ error: "Missing reCAPTCHA token" });
-    }
 
     let firebaseEmail;
     try {
@@ -51,33 +48,16 @@ authRouter.post("/signin", async (req, res) => {
       const uid = decodedToken.uid;
       const userRecord = await admin.auth().getUser(uid);
       firebaseEmail = userRecord.email;
+      console.log("Firebase email:", firebaseEmail);
+      console.log("User ID:", uid);
+      console.log("Decrypted email:", userRecord);
     } catch (authError) {
       return res.status(401).json({ error: "Unauthorized1" });
     }
 
-    try {
-      const response = await axios.post(
-        "https://www.google.com/recaptcha/api/siteverify",
-        null,
-        {
-          params: {
-            secret: process.env.SecretCaptcha,
-            response: recaptchatoken,
-          },
-        }
-      );
-
-      const { success, score, action } = response.data;
-
-      if (success || score >= 0.5) {
-        const token = jwt.sign({ email: email }, process.env.TOKEN);
-        res.json({ token });
-      } else {
-        return res.status(400).json({ error: "Invalid captcha" });
-      }
-    } catch (error) {
-      return res.status(500).json({ error: "Error verifying captcha" });
-    }
+    // Create and return JWT token without reCAPTCHA verification
+    const token = jwt.sign({ email: email }, process.env.TOKEN);
+    res.json({ token });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
   }

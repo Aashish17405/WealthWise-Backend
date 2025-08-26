@@ -117,6 +117,26 @@ expenseTrackerRouter.post("/submitdata", async (req, res) => {
   }
 });
 
+expenseTrackerRouter.post("/updatecount", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const updatedUser = await Signup.findOneAndUpdate(
+      { email: email },
+      { $set: { count: 1 } },
+      { new: true, upsert: false }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Count updated successfully", user: updatedUser });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).json({ error: e.message });
+  }
+});
+
 expenseTrackerRouter.post("/getAnalysis", async (req, res) => {
   if (!retriever2) {
     return res.status(503).json({
